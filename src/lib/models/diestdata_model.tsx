@@ -11,5 +11,4 @@ export interface ApiResponse {
   message: string;
   success: boolean;
   data: StatItem[];
-  errors: any;
-}
+ errors?: unknown;}
