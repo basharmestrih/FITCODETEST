@@ -1,17 +1,16 @@
-
-
 import { useEffect, useState } from "react";
 import { ApiResponse, StatItem } from "../../../lib/models/diestdata_model.tsx";
 
 export const useStats = () => {
   const [stats, setStats] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // added error state
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
-      setError(null); // reset error before fetching
+      setError(null);
+
       try {
         const res = await fetch("https://api.fitcode.life/api/v1/test/data-1");
 
@@ -26,9 +25,15 @@ export const useStats = () => {
         } else {
           throw new Error("API returned unsuccessful response");
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to fetch stats:", err);
-        setError(err.message || "Unknown error");
+
+        // Narrow unknown to Error to safely access message
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Unknown error");
+        }
       } finally {
         setLoading(false);
       }
@@ -37,5 +42,5 @@ export const useStats = () => {
     fetchStats();
   }, []);
 
-  return { stats, loading, error }; 
+  return { stats, loading, error };
 };
